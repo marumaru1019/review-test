@@ -1,57 +1,44 @@
-# from openai import ChatCompletion, OpenAIError
 import openai
-from git import Repo
+from github import Github
+import os
 
-# Constants
-INSTRUCTIONS = ("Act as a code reviewer of a Pull Request, providing feedback on possible bugs and clean code issues.\n"
-                "You are provided with the Pull Request changes in a patch format.\n"
-                "Each patch entry has the commit message in the Subject line followed by the code changes (diffs) in a unidiff format.\n\n"
-                "As a code reviewer, your task is:\n"
-                "- Review only added, edited or deleted lines.\n"
-                "- If there's no bugs and the changes are correct, write only 'No feedback.'\n"
-                "- If there's bug or incorrect code changes, don't write 'No feedback.'")
-
-def get_git_diff_files(repo_path) -> list:
-    repo = Repo(repo_path)
-    diffs = repo.git.diff(name_only=True).splitlines()
-    return diffs
+# MEMO: 日本語でプロンプトを作成することで、レビューの言語が自動的に日本語に設定される。
+INSTRUCTIONS_JP = ("プルリクエストのコードレビュアーとして振る舞い、可能性のあるバグやクリーンなコードの問題についてフィードバックを提供してください。\n"
+                   "あなたにはパッチ形式でプルリクエストの変更が提供されます。\n"
+                   "各パッチエントリには、コミットメッセージがサブジェクト行に続いてコードの変更点（diff）がunidiff形式で記載されています。\n\n"
+                   "コードレビュアーとしてのあなたのタスクは以下の通りです：\n"
+                   "- 追加された行、編集された行、削除された行のみをレビューしてください。\n"
+                   "- バグがなく、変更が正しい場合は「フィードバックなし」とのみ記述してください。\n"
+                   "- バグがある場合やコードの変更が不正確である場合は、「フィードバックなし」と記述しないでください。")
 
 
-def get_git_diff(repo_path, target_branch, file_name) -> str:
-    repo = Repo(repo_path)
-    # Ensure the repo is not in a dirty state
-    # if repo.is_dirty():
-    #     raise Exception("The repository is dirty. Please commit or stash changes first.")
-    # Get the git object for the file
-    # git_file = repo.git.path(file_name)
-    # # Fetch the latest changes for the target :
-    # repo.git.fetch()
-    # # Generate the diff for the file against the target branch
-    print(repo.git.diff(name_only=True).splitlines())
-    print("-----------------------")
-    diff = repo.git.diff(file_name)
-    return diff
+def get_pr():
+    # GitHub Actionsが提供するトークンを使用
+    g = Github(os.getenv('GITHUB_TOKEN'))
 
+    # リポジトリの取得
+    repo = g.get_repo(f"{os.getenv('GITHUB_REPOSITORY')}")
 
-def get_openai_review(system_propmpt: str = INSTRUCTIONS) -> str:
-    # Example usage
-    repo_path = '../../'  # Replace with the path to your local git repository
-    target_branch = 'feature/add-review-sample'  # Replace with the target branch name
-    diffs = get_git_diff_files(repo_path)
+    # プルリクエストの取得
+    pr_number = int(os.getenv('PULL_REQUEST_NUMBER'))
+    pr = repo.get_pull(pr_number)
+    return pr
+
+def get_openai_review(deployment_name ,pr, system_propmpt: str = INSTRUCTIONS_JP) -> str:
+
+    # プルリクエストの差分を取得
+    diffs = pr.get_files()
 
     review_messages = []
 
     for diff in diffs:
 
-        patch = get_git_diff(repo_path, target_branch, diff)
-        # print(patch)
-
         try:
             response = openai.ChatCompletion.create(
-                engine="gpt-35-turbo",
+                engine=deployment_name,
                 messages=[
                     {"role": "system", "content": system_propmpt},
-                    {"role": "user", "content": patch}
+                    {"role": "user", "content": diff.patch}
                 ],
                 max_tokens=1000
             )
