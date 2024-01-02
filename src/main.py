@@ -31,11 +31,13 @@ INSTRUCTIONS_JP = ("プルリクエストのコードレビュアーとして振
 def main():
     pr = get_pr()
     review_messages = get_openai_review(deployment_name=deployment_name, pr=pr)
-    for review_message in review_messages:
+    # for review_message in review_messages:
 
-        # Print out the review message
-        # コメントの追加
-        pr.create_issue_comment(review_message)
+    #     # Print out the review message
+    #     # コメントの追加
+    #     pr.create_issue_comment(review_message)
 
+    # コメントを改行を入れてまとめて追加
+    pr.create_issue_comment("\n\n".join(review_messages))
 if __name__ == "__main__":
     main()
