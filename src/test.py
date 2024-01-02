@@ -12,20 +12,21 @@ def main():
     pr_number = int(os.getenv('PULL_REQUEST_NUMBER'))
     pr = repo.get_pull(pr_number)
 
-
     # プルリクエストの差分を取得
     diff = pr.get_files()
 
     diff_text = ''
-
 
     # 出力
     for file in diff:
         diff_text += f'File: {file.filename}\n{file.patch}\n\n'
         print(f"File: {file.filename}, Status: {file.status}")
 
-    # コメントの追加
-    pr.create_issue_comment("sample comment")
+    # コメントを追加
+    pr.create_comment("This is a comment.")
+
+
+    
 
 if __name__ == "__main__":
     main()
