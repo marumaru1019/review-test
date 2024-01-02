@@ -9,12 +9,21 @@ def main():
     repo = g.get_repo(f"{os.getenv('GITHUB_REPOSITORY')}")
 
     # プルリクエストの取得
-    pr = repo.get_pull(pull_request_number)
+    pr = repo.get_pull(os.getenv('PULL_REQUEST_NUMBER'))
 
-    # コメントの追加
-    pr.create_issue_comment("Your automated review comment here")
+    # プルリクエストの差分を取得
+    diff = pr.get_files()
 
-    print("Comment added")
+    diff_text = ''
 
+
+    # 出力
+    for file in diff:
+        diff_text += f'File: {file.filename}\n{file.patch}\n\n'
+        print(f"File: {file.filename}, Status: {file.status}")
+
+    print("Diff retrieved")
+    print(diff_text)
+    
 if __name__ == "__main__":
     main()
