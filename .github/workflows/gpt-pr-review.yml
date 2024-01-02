@@ -22,7 +22,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run GPT PR
-      run: python src/main.py
+      run: python src/test.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
