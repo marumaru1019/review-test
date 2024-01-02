@@ -9,7 +9,9 @@ def main():
     repo = g.get_repo(f"{os.getenv('GITHUB_REPOSITORY')}")
 
     # プルリクエストの取得
-    pr = repo.get_pull(os.getenv('PULL_REQUEST_NUMBER'))
+    pr_number = int(os.getenv('PULL_REQUEST_NUMBER'))
+    pr = repo.get_pull(pr_number)
+
 
     # プルリクエストの差分を取得
     diff = pr.get_files()
@@ -24,6 +26,6 @@ def main():
 
     print("Diff retrieved")
     print(diff_text)
-    
+
 if __name__ == "__main__":
     main()
