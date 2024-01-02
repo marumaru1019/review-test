@@ -25,7 +25,7 @@ def main():
         print(f"File: {file.filename}, Status: {file.status}")
 
     # コメントを追加
-    pr.create_comment("This is a comment.", last_commit, diff[0].filename, 0)
+    pr.create_comment("This is a comment.", last_commit, "sample.txt", 0)
 
 
     
