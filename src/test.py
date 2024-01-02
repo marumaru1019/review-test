@@ -24,8 +24,8 @@ def main():
         diff_text += f'File: {file.filename}\n{file.patch}\n\n'
         print(f"File: {file.filename}, Status: {file.status}")
 
-    print("Diff retrieved")
-    print(diff_text)
+    # コメントの追加
+    pr.create_issue_comment("sample comment")
 
 if __name__ == "__main__":
     main()
