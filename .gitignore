@@ -1,0 +1,4 @@
+devops
+.venv
+src/__pycache__
+src/config.json
