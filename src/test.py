@@ -17,13 +17,15 @@ def main():
 
     diff_text = ''
 
+    last_commit = pr.get_commits()[pr.commits - 1]
+
     # 出力
     for file in diff:
         diff_text += f'File: {file.filename}\n{file.patch}\n\n'
         print(f"File: {file.filename}, Status: {file.status}")
 
     # コメントを追加
-    pr.create_comment("This is a comment.")
+    pr.create_comment("This is a comment.", last_commit, "file.txt", 0)
 
 
     
