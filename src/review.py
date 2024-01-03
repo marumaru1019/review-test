@@ -37,10 +37,10 @@ def get_openai_review(deployment_name: str,
             )
             message = response["choices"][0]["message"]["content"]
             # return message.strip()
-            review_messages.append(f"{diff.filename}: {message.strip()}")
+            review_messages.append(f"{diff.filename}:\n{message.strip()}")
         except openai.OpenAIError as e:
             print(f"An error occurred: {e}")
             # return "No feedback."
-            review_messages.append(f"{diff.filename}: No feedback.")
+            review_messages.append(f"{diff.filename}:\nNo feedback.")
 
     return review_messages
