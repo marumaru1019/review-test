@@ -7,6 +7,8 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
     - name: Checkout Repository
@@ -22,8 +24,11 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run GPT PR
-      run: python test.py
+      run: python src/main.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+        DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }}
